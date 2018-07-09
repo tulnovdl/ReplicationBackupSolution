@@ -10,6 +10,7 @@ namespace ReplicationBackuperCli
     {
         static void Main(string[] args)
         {
+            Backuper.test();
         }
     }
 }
