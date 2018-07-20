@@ -3,31 +3,26 @@ using Microsoft.SqlServer.Management.Smo;
 using Microsoft.SqlServer.Management.Smo.Agent;
 using Microsoft.SqlServer.Replication;
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ReplicationBackuperCli
 {
     class ServerLinkFactory
     {
-        String instance;
-        String userName;
-        String password;
-        Server server;
-
-        public static Server GetServerLink(String instance, String userName, String password)
+        /// <summary>
+        /// We are using domain authentication. Hence, program will connect with permissions of user.
+        /// </summary>
+        /// <param name="instance">For example "servername.com\instancename"</param>
+        /// <returns></returns>
+        public static Server GetServerLink(String instance)
         {
-            ServerConnection conn = new ServerConnection(instance, userName, password);
+            ServerConnection conn = new ServerConnection(instance);
             return new Server(conn);
         }
 
-        public static ReplicationServer GetReplicationServerLink(String instance, String userName, String password)
+        public static ReplicationServer GetReplicationServerLink(String instance)
         {
-            ServerConnection conn = new ServerConnection(instance, userName, password);
+            ServerConnection conn = new ServerConnection(instance);
             return new ReplicationServer(conn);
         }
     }

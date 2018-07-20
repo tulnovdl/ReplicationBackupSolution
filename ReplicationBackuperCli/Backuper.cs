@@ -8,84 +8,116 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ReplicationBackuperCli
 {
     class Backuper
     {
-        public static void test()
+        SimpleLogger logger = new SimpleLogger();
+
+        public void Run()
         {
-            string FolderDate;
-            string NetworkPath;
+            String folderDateNow = DateTime.Now.ToShortDateString().Replace('\\', '_').Replace('/', '_');
+            String baseDir = getBaseDir();
 
-            String instance = @"server\instance";
-            String userName = @"username";
-            String password = @"password";
-
-            Server srv = ServerLinkFactory.GetServerLink(instance, userName, password);
-            ReplicationServer RS = ServerLinkFactory.GetReplicationServerLink(instance, userName, password);
-
-            FolderDate = DateTime.Now.ToShortDateString().Replace('\\', '_').Replace('/', '_');
-            NetworkPath = @"\\confluence\D$" + @"\TestBackups" + @"\ReplicaitonBackups\" + FolderDate + "\\";
-            Directory.CreateDirectory(NetworkPath);
-
-            try
+            foreach (String instance in getInstances())
             {
-                foreach (ReplicationDatabase RD in RS.ReplicationDatabases)
+                try
                 {
-                    if (RD.HasPublications)
+                    ReplicationServer replicationServer = ServerLinkFactory.GetReplicationServerLink(instance);
+                    String pathToBackupPublications = baseDir + @"\SQLBackups" + @"\ReplicaitonBackups\" + replicationServer.Name + @"\" + folderDateNow + @"\Publications\";
+                    createDirectory(pathToBackupPublications);
+                    BackupPublications(pathToBackupPublications, folderDateNow, replicationServer);
+
+                    Server server = ServerLinkFactory.GetServerLink(instance);
+                    String pathToBackupJobs = baseDir + @"\SQLBackups" + @"\JobsBackups\" + server.Name + @"\" + folderDateNow + @"\";
+                    createDirectory(pathToBackupJobs);
+                    BackupJobs(server, pathToBackupJobs);
+                    logger.Info("Server: " + server.Name + " done");
+                }
+                catch (Exception e)
+                {
+                    logger.Error(e.StackTrace);
+                }
+            }
+            logger.Info("End of execution");
+        }
+        private void BackupPublications(string NetworkPath, string folderDate, ReplicationServer replicationServer)
+        {
+            foreach (ReplicationDatabase replicationDatabase in replicationServer.ReplicationDatabases)
+            {
+                if (replicationDatabase.HasPublications)
+                {
+                    foreach (TransPublication TP in replicationDatabase.TransPublications)
                     {
-                        foreach (TransPublication TP in RD.TransPublications)
-                        {
-                            TextWriter tw = new StreamWriter(NetworkPath + "\\" + TP.Name.ToString() + ".sql");
-                            tw.Write(TP.Script(ScriptOptions.Creation | ScriptOptions.IncludeAll ^ ScriptOptions.IncludeReplicationJobs));
-                            tw.Close();
-                        }
+                        TextWriter tw = new StreamWriter(NetworkPath + "\\" + TP.DatabaseName + "-" + TP.Name + ".sql");
+                        tw.Write(TP.Script(ScriptOptions.Creation | ScriptOptions.IncludeAll ^ ScriptOptions.IncludeReplicationJobs));
+                        tw.Close();
                     }
                 }
             }
-
-            catch (Exception eh)
-            {
-                //MessageBox.Show(eh.ToString());
-            }
-
-            StringCollection strCol = new StringCollection();
-            ScriptingOptions scriptOpt = new ScriptingOptions();
-            scriptOpt.IncludeDatabaseContext = true;
-
-            try
-            {
-                string script = "";
-                string JobName;
-                //Looping through the job
-                foreach (Job J in srv.JobServer.Jobs)
-                {
-                    script = "";
-                    JobName = J.Name.ToString();
-                    strCol = J.Script(scriptOpt);
-
-                    //concate the text of job
-                    foreach (string s in strCol)
-                    {
-                        script += s;
-                    }
-                    //save the job file
-                    string dir = @"\\confluence\D$" + @"\TestBackups" + @"\JobBackups\" + FolderDate + "\\";
-                    System.IO.Directory.CreateDirectory(dir);
-                    string fullPath = dir + JobName.Replace(':', '_').ToString() + @".sql";
-                    TextWriter tw = new StreamWriter(fullPath);
-                    tw.Write(script);
-                    tw.Close();
-                }
-            }
-            catch
-            {
-            }
-
         }
 
+        private void BackupJobs(Server server, String pathToCreate)
+        {
+            StringCollection stringCollection = new StringCollection();
+            ScriptingOptions scriptOptions = new ScriptingOptions
+            {
+                IncludeDatabaseContext = true
+            };
+
+            String script = "";
+            String jobName = "";
+            foreach (Job job in server.JobServer.Jobs)
+            {
+                script = "";
+                jobName = job.Name.ToString();
+                stringCollection = job.Script(scriptOptions);
+                    
+                foreach (string s in stringCollection)
+                {
+                    script += s;
+                }
+
+                jobName = GetSafeFilename(jobName);
+                String fullPath = pathToCreate + jobName + @".sql";
+                TextWriter tw = new StreamWriter(fullPath);
+                tw.Write(script);
+                tw.Close();
+            }
+        }
+
+        private List<String> getInstances()
+        {
+            List<String> resultList = new List<String>();
+
+            String[] lines = File.ReadAllText(@"servers.txt").Split(new char[] { ',' });
+            foreach (String line in lines)
+            {
+                resultList.Add(line.Trim());
+            }
+            return resultList;
+        }
+        
+        private String getBaseDir()
+        {
+            //TODO error check && validate
+            return File.ReadAllLines(@"basedir.txt")[0].Trim();
+        }
+
+        private void createDirectory(String path)
+        {
+            Directory.CreateDirectory(path);
+        }
+
+        public string GetSafeFilename(string filename)
+        {
+
+            return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
+
+        }
     }
 }
 

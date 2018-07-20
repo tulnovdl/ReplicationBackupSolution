@@ -10,7 +10,8 @@ namespace ReplicationBackuperCli
     {
         static void Main(string[] args)
         {
-            Backuper.test();
+            Backuper backuper = new Backuper();
+            backuper.Run();
         }
     }
 }
