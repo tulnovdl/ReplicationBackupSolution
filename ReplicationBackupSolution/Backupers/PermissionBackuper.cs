@@ -28,7 +28,6 @@ namespace ReplicationBackupSolution.Backupers
             {
                 Scripter scripter = new Scripter(server);
                 scripter.Options.ScriptDrops = false;
-                scripter.Options.WithDependencies = true;
                 scripter.Options.Indexes = true;
                 scripter.Options.DriAllConstraints = true;
                 scripter.Options.IncludeDatabaseRoleMemberships = true;

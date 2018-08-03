@@ -28,7 +28,8 @@ namespace ReplicationBackupSolution
                     JobsBackuper jobsBackuper = new JobsBackuper(server);
                     jobsBackuper.Backup();
 
-                    PermissionBackuper permissionBackuper = new PermissionBackuper(server);
+                    Server serverPermissions = ServerLinkFactory.GetServerLink(instance);
+                    PermissionBackuper permissionBackuper = new PermissionBackuper(serverPermissions);
                     permissionBackuper.Backup();
 
                     logger.Info("Server: " + server.Name + " done");
@@ -44,7 +45,6 @@ namespace ReplicationBackupSolution
         private List<String> getInstancesName()
         {
             List<String> resultList = new List<String>();
-
 
             String[] lines = File.ReadAllText(@"servers.txt").Split(new char[] { ',' });
             foreach (String line in lines)
