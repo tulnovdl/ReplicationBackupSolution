@@ -85,6 +85,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="basedirtobackup.txt.example" />
+    <None Include="servers.txt.example" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="AMKAW.ico" />
