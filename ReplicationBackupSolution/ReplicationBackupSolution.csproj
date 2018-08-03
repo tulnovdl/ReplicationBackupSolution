@@ -88,8 +88,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AMKAW.ico" />
-    <Content Include="servers.txt" />
     <Content Include="basedirtobackup.txt" />
+    <Content Include="servers.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
