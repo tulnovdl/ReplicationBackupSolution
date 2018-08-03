@@ -44,26 +44,7 @@ namespace ReplicationBackupSolution
         private List<String> getInstancesName()
         {
             List<String> resultList = new List<String>();
-            //{
-            //    @"1csrv\khp",
-            //    //@"1csrv",
-            //    //@"1csrv\khp",
-            //    //@"accountsrv\account",
-            //    //@"accountsrv\fs",
-            //    //@"appsrv\apps",
-            //    //@"calcsrv\calc",
-            //    //@"confluence\devsrv",
-            //    //@"financeserver\fin",
-            //    //@"humansrv\human",
-            //    //@"replsrv\repl",
-            //    //@"report\report",
-            //    //@"sqlarch\acalc",
-            //    //@"sqlarch\arch",
-            //    //@"srvcalc\calc",
-            //    //@"srvmes\mes"
-            //};
 
-            //return resultList;
 
             String[] lines = File.ReadAllText(@"servers.txt").Split(new char[] { ',' });
             foreach (String line in lines)
@@ -74,4 +55,3 @@ namespace ReplicationBackupSolution
         }
     }
 }
-

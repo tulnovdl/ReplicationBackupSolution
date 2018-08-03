@@ -34,7 +34,6 @@ namespace ReplicationBackupSolution.Helpers
         {
             //TODO: error check && validate
             return File.ReadAllLines(@"basedirtobackup.txt")[0].Trim();
-            //return @"\\qnap\SBE\!ReplicationBackups";
         }
     }
 }
