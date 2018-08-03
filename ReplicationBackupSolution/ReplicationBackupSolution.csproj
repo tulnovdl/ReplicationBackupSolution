@@ -6,11 +6,26 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{EBB54BAE-631E-4CDB-A723-EA9DA25040E0}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>ReplicationBackuperCli</RootNamespace>
-    <AssemblyName>ReplicationBackuperCli</AssemblyName>
+    <RootNamespace>ReplicationBackupSolution</RootNamespace>
+    <AssemblyName>ReplicationBackupSolution</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,7 +47,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject />
+    <StartupObject>ReplicationBackupSolution.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>AMKAW.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
@@ -52,18 +73,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Backuper.cs" />
-    <Compile Include="SimpleLogger.cs" />
+    <Compile Include="Backupers\PermissionBackuper.cs" />
+    <Compile Include="Helpers\BackupRunner.cs" />
+    <Compile Include="Backupers\JobsBackuper.cs" />
+    <Compile Include="Backupers\ReplicationBackuper.cs" />
+    <Compile Include="Helpers\PathBuilder.cs" />
+    <Compile Include="Helpers\SimpleLogger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServerLinkFactory.cs" />
+    <Compile Include="Helpers\ServerLinkFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AMKAW.ico" />
     <Content Include="servers.txt" />
-    <Content Include="basedir.txt" />
+    <Content Include="basedirtobackup.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 и x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

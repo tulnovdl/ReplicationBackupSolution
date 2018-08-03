@@ -1,11 +1,10 @@
 ﻿using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
-using Microsoft.SqlServer.Management.Smo.Agent;
 using Microsoft.SqlServer.Replication;
 using System;
 
 
-namespace ReplicationBackuperCli
+namespace ReplicationBackupSolution
 {
     class ServerLinkFactory
     {
@@ -17,12 +16,14 @@ namespace ReplicationBackuperCli
         public static Server GetServerLink(String instance)
         {
             ServerConnection conn = new ServerConnection(instance);
+            conn.MultipleActiveResultSets = true;
             return new Server(conn);
         }
 
         public static ReplicationServer GetReplicationServerLink(String instance)
         {
             ServerConnection conn = new ServerConnection(instance);
+            conn.MultipleActiveResultSets = true;
             return new ReplicationServer(conn);
         }
     }
